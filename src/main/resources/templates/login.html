@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>RBAC Demo - Login</title>
+</head>
+<body>
+  <h2>RBAC Demo — Login</h2>
+  <form method="post" action="/login">
+    <label>Username:
+      <input name="username" />
+    </label>
+    <button type="submit">Login</button>
+  </form>
+  <div th:if="${error}">
+    <p style="color:red" th:text="${error}"></p>
+  </div>
+  <p>Available demo users: alice (ADMIN), bob (TEACHER), carol (TA & STUDENT), dave (STUDENT)</p>
+</body>
+</html>

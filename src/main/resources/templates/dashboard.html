@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>RBAC Dashboard</title>
+  <script>
+    async function doAction(source, target, operation){
+      const form = new URLSearchParams({source, target, operation});
+      const res = await fetch('/action', {method:'POST', body: form});
+      const j = await res.json();
+      alert((j.allowed ? 'ALLOWED: ' : 'DENIED: ') + j.message);
+      location.reload();
+    }
+  </script>
+</head>
+<body>
+  <h2>Welcome, <span th:text="${user.displayName}">User</span></h2>
+  <p>Current role:
+    <form method="post" action="/selectRole" style="display:inline">
+      <select name="role" onchange="this.form.submit()">
+        <option th:each="r : ${roles}"
+                th:value="${r.name}"
+                th:text="${r.name}"
+                th:selected="${r.name == currentRole}"></option>
+      </select>
+    </form>
+    <a href="/logout">Logout</a>
+  </p>
+
+  <h3>Menu (example)</h3>
+  <ul>
+    <li><button onclick="doAction('UI','report:monthly','read')">View Monthly Report</button></li>
+    <li><button onclick="doAction('UI','message:all','send')">Send Message</button></li>
+  </ul>
+
+  <h3>Resources</h3>
+  <table border="1" cellpadding="6">
+    <tr><th>Id</th><th>Owner</th><th>Confidential</th><th>Shared</th><th>Actions</th></tr>
+    <tr th:each="res : ${resources}">
+      <td th:text="${res.id}">res</td>
+      <td th:text="${res.ownerUsername}">owner</td>
+      <td th:text="${res.confidential}">false</td>
+      <td th:text="${res.shared}">false</td>
+      <td>
+        <button th:attr="onclick=|doAction('UI','${res.id}','read')|">Read</button>
+        <button th:attr="onclick=|doAction('UI','${res.id}','share')|">Toggle Share</button>
+      </td>
+    </tr>
+  </table>
+
+  <h3>Notes</h3>
+  <ul>
+    <li>MAC demo: resource <b>res2</b> is confidential — only ADMIN can share it (even owner cannot). </li>
+    <li>DAC demo: owner of a non-confidential resource can toggle sharing even if their role lacks explicit share permission.</li>
+    <li>Session: switch current role via the dropdown — the dispatched Action will be checked against the currently selected role.</li>
+  </ul>
+</body>
+</html>
