@@ -11,7 +11,6 @@ public class ActionDispatcher {
     private final List<ActionListener> listeners = new ArrayList<>();
     public void register(ActionListener l) { listeners.add(l); }
 
-    // called by controller - returns true if all listeners allow
     public boolean dispatch(Action action, String activeRole) {
         for (ActionListener l: listeners) {
             boolean ok = l.handle(action, activeRole);

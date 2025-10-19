@@ -1,19 +1,18 @@
 package com.example.rbacdemo.security;
 
-import com.example.rbacdemo.model.User;
-import com.example.rbacdemo.repo.InMemoryRepo;
+import com.example.rbacdemo.entity.UserEntity;
+import com.example.rbacdemo.repo.UserRepository;
 import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Service
 public class AuthService {
-    private final InMemoryRepo repo;
-    public AuthService(InMemoryRepo repo) { this.repo = repo; }
+    private final UserRepository userRepo;
+    public AuthService(UserRepository userRepo) { this.userRepo = userRepo; }
 
-    public Optional<User> login(String username) {
-        return repo.findUser(username);
+    public Optional<UserEntity> login(String username) {
+        return userRepo.findByUsername(username);
     }
 
     public void setCurrentRole(HttpSession session, String roleName) {

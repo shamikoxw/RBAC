@@ -2,57 +2,54 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>RBAC Dashboard</title>
+  <title>RBAC 示例 — 仪表盘</title>
   <script>
     async function doAction(source, target, operation){
       const form = new URLSearchParams({source, target, operation});
       const res = await fetch('/action', {method:'POST', body: form});
       const j = await res.json();
-      alert((j.allowed ? 'ALLOWED: ' : 'DENIED: ') + j.message);
+      alert((j.allowed ? '允许：' : '拒绝：') + j.message);
       location.reload();
     }
   </script>
 </head>
 <body>
-  <h2>Welcome, <span th:text="${user.displayName}">User</span></h2>
-  <p>Current role:
+  <h2>欢迎，<span th:text="${user.displayName}">用户</span></h2>
+  <p>当前角色：
     <form method="post" action="/selectRole" style="display:inline">
       <select name="role" onchange="this.form.submit()">
-        <option th:each="r : ${roles}"
-                th:value="${r.name}"
-                th:text="${r.name}"
-                th:selected="${r.name == currentRole}"></option>
+        <option th:each="r : ${roles}" th:value="${r.name}" th:text="${r.name}" th:selected="${r.name == currentRole}"></option>
       </select>
     </form>
-    <a href="/logout">Logout</a>
+    <a href="/logout">退出</a>
   </p>
 
-  <h3>Menu (example)</h3>
+  <h3>菜单示例</h3>
   <ul>
-    <li><button onclick="doAction('UI','report:monthly','read')">View Monthly Report</button></li>
-    <li><button onclick="doAction('UI','message:all','send')">Send Message</button></li>
+    <li><button onclick="doAction('UI','report:monthly','read')">查看月报</button></li>
+    <li><button onclick="doAction('UI','message:all','send')">发送消息</button></li>
   </ul>
 
-  <h3>Resources</h3>
+  <h3>资源列表</h3>
   <table border="1" cellpadding="6">
-    <tr><th>Id</th><th>Owner</th><th>Confidential</th><th>Shared</th><th>Actions</th></tr>
+    <tr><th>Id</th><th>所有者</th><th>是否保密</th><th>是否共享</th><th>操作</th></tr>
     <tr th:each="res : ${resources}">
       <td th:text="${res.id}">res</td>
       <td th:text="${res.ownerUsername}">owner</td>
       <td th:text="${res.confidential}">false</td>
       <td th:text="${res.shared}">false</td>
       <td>
-        <button th:attr="onclick=|doAction('UI','${res.id}','read')|">Read</button>
-        <button th:attr="onclick=|doAction('UI','${res.id}','share')|">Toggle Share</button>
+        <button th:attr="onclick=|doAction('UI','${res.id}','read')|">读取</button>
+        <button th:attr="onclick=|doAction('UI','${res.id}','share')|">切换共享</button>
       </td>
     </tr>
   </table>
 
-  <h3>Notes</h3>
+  <h3>说明</h3>
   <ul>
-    <li>MAC demo: resource <b>res2</b> is confidential — only ADMIN can share it (even owner cannot). </li>
-    <li>DAC demo: owner of a non-confidential resource can toggle sharing even if their role lacks explicit share permission.</li>
-    <li>Session: switch current role via the dropdown — the dispatched Action will be checked against the currently selected role.</li>
+    <li>MAC 示例：资源 <b>res2</b> 被标记为保密 —— 除管理员外无法共享。</li>
+    <li>DAC 示例：非保密资源的所有者可以切换共享状态（即使其角色没有显式共享权限）。</li>
+    <li>会话：下拉选择当前角色，系统将在该角色下执行权限检查（RBAC）。</li>
   </ul>
 </body>
 </html>
