@@ -27,7 +27,8 @@ public class PermissionEntity {
 
     public boolean matches(String actionSource, String actionTarget, String actionOperation) {
         boolean s = "*".equals(source) || source.equals(actionSource);
-        boolean t = "*".equals(target) || target.equals(actionTarget);
+        boolean t = "*".equals(target) || target.equals(actionTarget) || 
+                 (target.endsWith("*") && actionTarget.startsWith(target.substring(0, target.length() - 1)));
         boolean o = "*".equals(operation) || operation.equals(actionOperation);
         return s && t && o;
     }
